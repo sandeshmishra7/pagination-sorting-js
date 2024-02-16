@@ -43,7 +43,7 @@ let btnPrev = document.getElementById('btnPrev');
 let btnNext = document.getElementById('btnNext');
 
 btnPrev.addEventListener('click', () => {
-    initialValue = Math.max(0, initialValue - 10);
+    initialValue = initialValue - 10;
     handler();
 });
 
