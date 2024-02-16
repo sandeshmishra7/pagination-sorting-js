@@ -1,16 +1,17 @@
 let data = [];
 let initialValue = 0;
 
+
 function handler() {
     fetch('https://dummyjson.com/products')
         .then((response) => {
             return response.json();
         }).then((response) => {
             data = response.products;
+            let sortedData = data;
             let tableBody = document.getElementById('tableBody');
             let str = '';
             let endValue = initialValue + 10;
-
             // Clear previous rows
             tableBody.innerHTML = '';
 
@@ -19,6 +20,7 @@ function handler() {
                             <td>${data[i].id}</td>
                             <td>${data[i].title}</td>
                             <td>${data[i].description}</td>
+                            <td>$${data[i].price}</td>
                         </tr>`;
             }
 
@@ -41,16 +43,31 @@ function handler() {
 
 let btnPrev = document.getElementById('btnPrev');
 let btnNext = document.getElementById('btnNext');
-
-btnPrev.addEventListener('click', () => {
-    initialValue = initialValue - 10;
-    handler();
-});
+let ascendBtn = document.getElementById('ascend');
+let descendBtn = document.getElementById('descend');
 
 btnNext.addEventListener('click', () => {
-    initialValue += 10;
+    initialValue = Math.min(initialValue + 10, data.length - 10); // Ensure initialValue does not exceed data.length - 10
     handler();
 });
 
-// Initial fetch and table setup
+btnPrev.addEventListener('click', () => {
+    initialValue = Math.max(initialValue - 10, 0); // Ensure initialValue does not go below 0
+    handler();
+});
+
+ascendBtn.addEventListener('click', function () {
+    tableBody.innerHTML = '';
+    sortedData = [...data].sort((a, b) => a.price - b.price);
+    data = sortedData;
+    handler();
+});
+
+descendBtn.addEventListener('click', function () {
+    tableBody.innerHTML = '';
+    sortedData = [...data].sort((a, b) => b.price - a.price);
+    data = sortedData;
+    handler();
+});
+
 handler();
