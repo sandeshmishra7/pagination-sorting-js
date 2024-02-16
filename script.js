@@ -1,4 +1,5 @@
 let data = [];
+let initialValue = 0;
 
 function handler() {
     fetch('https://dummyjson.com/products')
@@ -6,10 +7,14 @@ function handler() {
             return response.json();
         }).then((response) => {
             data = response.products;
-            console.log(data);
             let tableBody = document.getElementById('tableBody');
             let str = '';
-            for (let i = 0; i < 10; i++) {
+            let endValue = initialValue + 10;
+
+            // Clear previous rows
+            tableBody.innerHTML = '';
+
+            for (let i = initialValue; i < endValue && i < data.length; i++) {
                 str += `<tr>
                             <td>${data[i].id}</td>
                             <td>${data[i].title}</td>
@@ -17,37 +22,35 @@ function handler() {
                         </tr>`;
             }
 
-            tableBody.innerHTML += str;
-        }).catch((error) => console.log(`E: ${error}`));
+            tableBody.innerHTML = str; // Replace the table content with new rows
+
+            // Show or hide buttons based on data length and initial value
+            if (initialValue === 0) {
+                document.getElementById('btnPrev').style.display = 'none';
+            } else {
+                document.getElementById('btnPrev').style.display = 'inline-block';
+            }
+
+            if (endValue >= data.length && data.length > 0) {
+                document.getElementById('btnNext').style.display = 'none';
+            } else {
+                document.getElementById('btnNext').style.display = 'inline-block';
+            }
+        }).catch((error) => console.log(`Error: ${error}`));
 }
 
-handler();
+let btnPrev = document.getElementById('btnPrev');
+let btnNext = document.getElementById('btnNext');
 
-let btn = document.querySelector('button');
+btnPrev.addEventListener('click', () => {
+    initialValue = Math.max(0, initialValue - 10);
+    handler();
+});
 
-let initialValue = 10;
-
-btn.addEventListener('click', function () {
-
-    console.log('yes')
-
-    let endValue = initialValue + 10;
-
-    let str = '';
-
-    for (let i = initialValue; i < endValue && i < data.length; i++) {
-        str += `<tr>
-                    <td>${data[i].id}</td>
-                    <td>${data[i].title}</td>
-                    <td>${data[i].description}</td>
-                </tr>`;
-    }
-
-    tableBody.innerHTML += str;
-
+btnNext.addEventListener('click', () => {
     initialValue += 10;
+    handler();
+});
 
-    if (endValue >= data.length) {
-        btn.style.display = 'none';
-    }
-})
+// Initial fetch and table setup
+handler();
